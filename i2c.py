@@ -1,98 +1,98 @@
 from serializer import *
 from struct import *
-from smbus2 import SMBus
+from smbus2 import SMBus, i2c_msg
 
 
 i2c_bus = 0
-address = 0x0F
+address = 0x0f
 
 def set_bus(bus_val, address_val):
     i2c_bus = bus_val
     address = address_val
-
+    print(i2c_bus, address)
 
 def get():
     with SMBus(i2c_bus) as bus:
-        #Read a block of 16 bytes from address 80, offset 0
-        block = bytes(bus.read_i2c_block_data(address, 0, 16))
-        #Returned value is a list of 16 bytes
+        block = bytes(bus.read_i2c_block_data(address, 1, 16))
         out = unpack("<ffff", block)
         return out
 
 
 def send_reset():
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(mode_pnumatic()))
-    #print("reset")
+        msg = i2c_msg.write(address, reset())
+        bus.i2c_rdwr(msg)
 
 
 def send_pid(p, i, d):
     with SMBus(i2c_bus) as bus:
         if p != None:
-            bus.write_block_data(address, 0, bytes(set_kp(p)))
+            #bus.write_block_data(address, 0, bytes(set_kp(p)))
+            msg = i2c_msg.write(address, set_kp(p))
+            bus.i2c_rdwr(msg)
 
         if i != None:
-            bus.write_block_data(address, 0, bytes(set_ki(i)))
+            msg = i2c_msg.write(address, set_ki(i))
+            bus.i2c_rdwr(msg)
 
         if d != None:
-            bus.write_block_data(address, 0, bytes(set_kd(d)))
+            msg = i2c_msg.write(address, set_kd(d))
+            bus.i2c_rdwr(msg)
 
 
 def send_limits(pwm, max, min):
+    print(pwm)
     with SMBus(i2c_bus) as bus:
         if pwm != None:
-            bus.write_block_data(address, 0, bytes(limit_pwm(pwm)))
+            msg = i2c_msg.write(address, limit_pwm(pwm))
+            bus.i2c_rdwr(msg)
 
         if max != None:
-            bus.write_block_data(address, 0, bytes(limit_target_max(max)))
+            msg = i2c_msg.write(address, limit_target_max(max))
+            bus.i2c_rdwr(msg)
 
         if min != None:
-            bus.write_block_data(address, 0, bytes(limit_target_min(min)))
+            msg = i2c_msg.write(address, limit_target_min(min))
+            bus.i2c_rdwr(msg)
 
 
 def send_enable(state):
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(enable(state)))
-    #print(state)
+        msg = i2c_msg.write(address, enable(state))
+        bus.i2c_rdwr(msg)
 
 
 def send_mode_pwm():
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(mode_pwm()))
-    #print("pwm")
+        msg = i2c_msg.write(address, mode_pwm())
+        bus.i2c_rdwr(msg)
 
 
 def send_mode_pid():
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(mode_pid()))
-    #print("pid")
+        msg = i2c_msg.write(address, mode_pid())
+        bus.i2c_rdwr(msg)
 
 
 def send_mode_pnumatic():
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(mode_pnumatic()))
-    #print("pnu")
+        msg = i2c_msg.write(address, mode_pnumatic())
+        bus.i2c_rdwr(msg)
 
 
 def send_target(value):
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(set_target(value)))
-    #print(value)
-
+        msg = i2c_msg.write(address, set_target(value))
+        bus.i2c_rdwr(msg)
+    
 
 def send_homing_speed(value):
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(set_home(value)))
-    #print(value)
-
-def send_encoder_pol(value):
-    #print(value)
-    with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, bytes(encoder_polarity(value)))
+        msg = i2c_msg.write(address, set_home(value))
+        bus.i2c_rdwr(msg)
     
 
-
-def send_encoder_polarity(value):
+def send_encoder_pol(value):
     with SMBus(i2c_bus) as bus:
-        bus.write_block_data(address, 0, encoder_polarity(set_home(value)))
-    #print(value)
+        msg = i2c_msg.write(address, encoder_polarity(value))
+        bus.i2c_rdwr(msg)

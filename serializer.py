@@ -41,11 +41,11 @@ def set_kd(value):
 
 
 def set_home(value):  
-    return struct.pack("<Bi", 10, float(value))
+    return struct.pack("<Bi", 10, int(value))
 
 
 def limit_pwm(value):  
-    return struct.pack("<BI", 11, int(value)+ 2**32)
+    return struct.pack("<BI", 11, int(value)) #+ 2**32
 
 
 def limit_target_min(value):  
@@ -57,5 +57,5 @@ def limit_target_max(value):
 
 
 def encoder_polarity(value):
-    return struct.pack("<BI", 14, int(value)+ 2**32)
+    return struct.pack("<BI", 14, int(value)) #+ 2**32
 

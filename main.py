@@ -104,7 +104,7 @@ class LimitsWindow:
 
     def limits_setup(self):
         try:
-            pwm = int(self.pwm_entry.get()) + 2**32
+            pwm = int(self.pwm_entry.get()) #+ 2**32
         except ValueError:
             pwm = None
 
